@@ -26,8 +26,8 @@
 #
 # Release info:
 #
-# 2019.01
-#   - initial release for REFLEX CES Alaric DevKit
+# 2019.05
+#   - initial release for REFLEX CES COMXpressSX Stratix 10 module
 #
 # TODO: add dependecy checking to this sript (currently in yocto-packages.sh because the installation
 #       of packages, if necessary, requires root privileges); this script cannot run as root
