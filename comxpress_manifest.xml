@@ -6,5 +6,5 @@
 
 	<project remote="github" name="kraj/meta-altera" path="layers/meta-altera" revision="master"/>
     <!--	<project remote="github_altera"  name="altera-opensource/meta-altera-refdes" path="layers/meta-altera-refdes" revision="master"/> -->
-	<project remote="github_altera"  name="dnegvesky/meta-comxpress" path="layers/meta-comxpress" revision="beta-build-test" upstream="master"/>
+	<project remote="github_altera"  name="dnegvesky/meta-comxpress" path="layers/meta-comxpress" revision="thud" upstream="master"/>
 </manifest>
