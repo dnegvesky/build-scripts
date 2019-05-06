@@ -49,7 +49,7 @@ SCRIPT_VERSION="Yocto ${YOCTO_REL} Build Script"
 # Other configuration variables
 BOARD=comxpress
 BOARD_LONG="not specified"
-BUILD_DIR=angstrom-$ANGSTROM_VER-$YOCTO_REL
+BUILD_DIR=angstrom-$ANGSTROM_VER-yocto$YOCTO_REL
 UBOOT_VER=2017.09
 KERNEL_VER=4.14.73-ltsi
 QTS_VER=N/A
