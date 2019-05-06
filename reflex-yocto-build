@@ -37,13 +37,43 @@
 #
 
 #################################################
+# Variables
+#################################################
+
+# Script version variables
+YOCTO_REL=2.5
+YOCTO_CODENAME=sumo
+ANGSTROM_VER="v2018.06"
+SCRIPT_VERSION="Yocto ${YOCTO_REL} Build Script"
+
+# Other configuration variables
+BOARD=comxpress
+BOARD_LONG="not specified"
+BUILD_DIR=angstrom-$ANGSTROM_VER-$YOCTO_REL
+UBOOT_VER=2017.09
+KERNEL_VER=4.14.73-ltsi
+QTS_VER=N/A
+GHRD_BRANCH=N/A
+BUILD_IMG=xfce
+IMG_SIZE=75
+
+# Color text formatting
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[1;34m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m' # Not good for white terminal background
+NC='\033[0m' # No Color
+
+#################################################
 # Functions
 #################################################
 
 usage()
 {
     echo "Usage: ./reflex-yocto-build [options]"
-    echo "Yocto 2.2 build script for ${DISTRO_VER}"
+    echo "Yocto Project build script for ${ANGSTROM_VER}"
     echo "Options:"
     echo "  -b, --board [board name]       Target development board.  Currently supported boards:"
     echo "                                   achilles"
@@ -52,7 +82,7 @@ usage()
     echo ""
     echo "  -d, --directory [dir name]     Build directory name"
     echo "                                 If not specified, defaults to"
-    echo "                                 angstrom-v2018.06-yocto2.6"
+    echo "                                 angstrom-${ANGSTROM_VER}-${YOCTO_REL}"
     echo ""
     echo "  -i, --image [image name]       Only these images names are valid:"
     echo "                                   xfce (XFCE graphical desktop, default if image not specified)"
@@ -160,29 +190,6 @@ check_git_config()
 # Main
 #################################################
 
-# Configuration variables
-SCRIPT_VERSION="Yocto 2.6 Build Script"
-YOCTO_VER=2.6
-SHORT_VER=18.1
-BOARD=alaric
-BOARD_LONG="REFLEX CES Alaric Development Kit"
-BUILD_DIR=angstrom-v2018.06-yocto2.6
-GHRD_BRANCH=
-UBOOT_VER=2014.10
-KERNEL_VER=4.9.78-ltsi
-DISTRO_VER="Angstrom v2018.06"
-BUILD_IMG=xfce
-IMG_SIZE=75
-
-# Color text formatting
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-ORANGE='\033[0;33m'
-BLUE='\033[1;34m'
-CYAN='\033[0;36m'
-WHITE='\033[1;37m' # Not good for white terminal background
-NC='\033[0m' # No Color
-
 # ensure not running as root
 if [ `whoami` = root ] ; then
     printf "\n${RED}ERROR: Do not run this script as root\n\n"
@@ -266,14 +273,14 @@ case $BUILD_IMG in
         IMG_SIZE=11
         KERNEL_VER=NA
         GHRD_BRANCH=NA
-        DISTRO_VER=NA
+        ANGSTROM_VER=NA
     ;;
     kernel)
         BUILD_IMG=virtual/kernel
         IMG_SIZE=13
         UBOOT_VER=NA
         GHRD_BRANCH=NA
-        DISTRO_VER=NA
+        ANGSTROM_VER=NA
     ;;
     *)
         echo ""
@@ -311,15 +318,15 @@ export BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE IMAGE_ROOTFS_EXTRA_SPACE"
 # print introduction, ask for confirmation
 echo -e ${GREEN}
 printf "*******************************************************************\n"
-printf " This is the Yocto v${YOCTO_VER} build script for the\n"
+printf " This is the Yocto v${YOCTO_REL} build script for the\n"
 printf " ${BOARD_LONG}\n"
 printf " Current build configuration:\n"
 #printf " Run script with --help to view customizable perameters.\n"
-printf "  - GSRD release:           ${BLUE}${SHORT_VER}${GREEN}\n"
+printf "  - GSRD release:           ${BLUE}${QTS_VER}${GREEN}\n"
 printf "  - GHRD branch:            ${BLUE}${GHRD_BRANCH}${GREEN}\n"
 printf "  - U-Boot version:         ${BLUE}${UBOOT_VER}${GREEN}\n"
 printf "  - Kernel version:         ${BLUE}${KERNEL_VER}${GREEN}\n"
-printf "  - Distro version:         ${BLUE}${DISTRO_VER}${GREEN}\n"
+printf "  - Distro version:         ${BLUE}${ANGSTROM_VER}${GREEN}\n"
 printf "  - Build image:            ${BLUE}${BUILD_IMG}${GREEN}\n"
 printf "      disk space required:  ${BLUE}${IMG_SIZE} GB${GREEN}\n"
 printf "  - top build directory:    ${BLUE}${BUILD_DIR}${GREEN}\n"
@@ -328,7 +335,7 @@ printf "\n"
 printf " If this is your first time using the Yocto Project OpenEmbedded\n"
 printf " build system on this computer, it may be necessary to exit this\n"   
 printf " script and first install some build tools and essential packages\n"
-printf " as documented in the Yocto Project Reference Manual v2.2.  You\n"
+printf " as documented in the Yocto Project Reference Manual v${YOCTO_REL}.  You\n"
 printf " should run the ${NC}yocto-packages.sh${GREEN} script with root privileges as\n"
 printf " instructed on the rocketboards.org page to check for and install\n"
 printf " any missing build tools and packages.\n"
@@ -394,8 +401,7 @@ sleep 2
 # Clone Angstrom repo
 # cannot use a variable in the repo command (?? - need to verify) so the Angstrom branch name
 # needs to be manually modified for future releases
-if repo init -u git://github.com/Angstrom-distribution/angstrom-manifest -b angstrom-v2018.06-sumo ; then
-#if repo init -u git://github.com/Angstrom-distribution/angstrom-manifest -b angstrom-v2018.12-thud ; then
+if repo init -u git://github.com/Angstrom-distribution/angstrom-manifest -b angstrom-$ANGSTROM_VER-$YOCTO_CODENAME ; then
     :
 else
     echo -e ${RED}
