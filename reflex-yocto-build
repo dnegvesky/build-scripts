@@ -82,7 +82,7 @@ usage()
     echo ""
     echo "  -d, --directory [dir name]     Build directory name"
     echo "                                 If not specified, defaults to"
-    echo "                                 angstrom-${ANGSTROM_VER}-${YOCTO_REL}"
+    echo "                                 angstrom-${ANGSTROM_VER}-yocto${YOCTO_REL}"
     echo ""
     echo "  -i, --image [image name]       Only these images names are valid:"
     echo "                                   xfce (XFCE graphical desktop, default if image not specified)"
