@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+	<remote fetch="https://github.com" name="github_altera"/>
+	<remove-project name="kraj/meta-altera" />
+	<remove-project name="linux4sam/meta-atmel" />
+
+    <!--	<project remote="github_altera"  name="altera-opensource/meta-altera" path="layers/meta-altera" revision="angstrom-v2019.06-yocto2.7"/>  -->
+    	<project remote="github_altera"  name="kraj/meta-altera" path="layers/meta-altera" revision="master"/>
+    	<project remote="github_altera"  name="altera-opensource/meta-altera-refdes" path="layers/meta-altera-refdes" revision="master"/>
+    <!--	<project remote="github_altera"  name="dnegvesky/meta-achilles" path="layers/meta-achilles" revision="warrior" upstream="master"/> -->
+    	<project remote="github_altera"  name="dnegvesky/meta-achilles" path="layers/meta-achilles" revision="beta-build-test" upstream="master"/>
+</manifest>
+
