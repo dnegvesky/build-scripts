@@ -41,21 +41,22 @@
 #################################################
 
 # Script version variables
-YOCTO_REL=2.5
-YOCTO_CODENAME=sumo
-ANGSTROM_VER="v2018.06"
+YOCTO_REL=2.7
+YOCTO_CODENAME=warrior
+ANGSTROM_VER="v2019.06"
 SCRIPT_VERSION="Yocto ${YOCTO_REL} Build Script"
 
 # Other configuration variables
-BOARD=comxpress
+# set a default board for the build, can be changed with -b option
+BOARD=achilles
 BOARD_LONG="not specified"
 BUILD_DIR=angstrom-$ANGSTROM_VER-yocto$YOCTO_REL
-UBOOT_VER=2017.09
-KERNEL_VER=4.14.73-ltsi
+UBOOT_VER=2019.10
+KERNEL_VER=4.14.130-ltsi
 QTS_VER=N/A
 GHRD_BRANCH=N/A
-BUILD_IMG=xfce
-IMG_SIZE=75
+BUILD_IMG=console
+IMG_SIZE=16
 
 # Color text formatting
 RED='\033[0;31m'
@@ -262,25 +263,26 @@ esac
 case $BUILD_IMG in
     xfce)
         BUILD_IMG=$BOARD-xfce-image
-        IMG_SIZE=75
-    ;;
+#        IMG_SIZE=75
+        IMG_SIZE=45
+     ;;
     console)
         BUILD_IMG=$BOARD-console-image
-        IMG_SIZE=35
+        IMG_SIZE=16
     ;;
     uboot)
         BUILD_IMG=virtual/bootloader
         IMG_SIZE=11
         KERNEL_VER=NA
         GHRD_BRANCH=NA
-        ANGSTROM_VER=NA
+        #ANGSTROM_VER=NA
     ;;
     kernel)
         BUILD_IMG=virtual/kernel
         IMG_SIZE=13
         UBOOT_VER=NA
         GHRD_BRANCH=NA
-        ANGSTROM_VER=NA
+        #ANGSTROM_VER=NA
     ;;
     *)
         echo ""
@@ -311,9 +313,9 @@ fi
 #echo -e ${NC}
 
 # ensure that there is 1GB of free space in the rootfs image for user files
-# and add this variable to the bitbake variables whitelist\
-export IMAGE_ROOTFS_EXTRA_SPACE="1048576"
-export BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE IMAGE_ROOTFS_EXTRA_SPACE"
+# and add this variable to the bitbake variables whitelist
+#export IMAGE_ROOTFS_EXTRA_SPACE="1048576"
+#export BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE IMAGE_ROOTFS_EXTRA_SPACE"
 
 # print introduction, ask for confirmation
 echo -e ${GREEN}
@@ -399,8 +401,6 @@ echo -e ${NC}
 
 sleep 2
 # Clone Angstrom repo
-# cannot use a variable in the repo command (?? - need to verify) so the Angstrom branch name
-# needs to be manually modified for future releases
 if repo init -u git://github.com/Angstrom-distribution/angstrom-manifest -b angstrom-$ANGSTROM_VER-$YOCTO_CODENAME ; then
     :
 else
@@ -420,11 +420,13 @@ echo "*******************************************************************"
 echo -e ${NC}
 
 sleep 2
+
 # this is where our custom layers are specified for the repo tool
+
 # use this line for testing builds from a local repo
 if cp /home/dan/work/github/dnegvesky/build-scripts/${BOARD}_manifest.xml . ; then
 # use this line for builds that fetch files from github
-#if wget https://raw.githubusercontent.com/arrow-socfpga/build-scripts/gsrd-16.1/${BOARD}_manifest.xml ; then
+#if wget https://raw.githubusercontent.com/reflexces/build-scripts/warrior/${BOARD}_manifest.xml ; then
     echo "Done"
 else
     echo -e ${RED}
@@ -435,7 +437,6 @@ fi
 
 mkdir -p .repo/local_manifests
 mv ${BOARD}_manifest.xml .repo/local_manifests
-#cp ../../alaric_manifest.xml .repo/local_manifests
 
 echo -e ${GREEN}
 echo "*******************************************************************"
@@ -464,11 +465,12 @@ echo "*******************************************************************"
 echo -e ${NC}
 
 # add custom layer to bblayers.conf
-sed --follow-symlinks -i "/meta-altera/a \  \${TOPDIR}/layers/meta-${BOARD} \\\\" conf/bblayers.conf
+sed --follow-symlinks -i "/meta-altera/a \  \${OEROOT}/layers/meta-${BOARD} \\\\" conf/bblayers.conf
 echo "Added meta-${BOARD} layer to bblayers.conf"
+#sed --follow-symlinks -i "/meta-altera/a \  \${OEROOT}/layers/meta-altera-refdes \\\\" conf/bblayers.conf
+#echo "Added meta-altera-refdes layer to bblayers.conf"
 
 # disable meta-photography layer - causing gnome-keyring bitbake error
-# this was required for Chameleon96
 sed --follow-symlinks -i '/meta-photography/d' conf/bblayers.conf
 echo "Removed meta-photography layer from bblayers.conf"
 
@@ -477,7 +479,7 @@ sed --follow-symlinks -i '/meta-atmel/d' conf/bblayers.conf
 echo "Removed meta-atmel layer from bblayers.conf"
 
 #disable meta-freescale per altera.xml manifest
-sed --follow-symlinks -i '/meta-atmel/d' conf/bblayers.conf
+sed --follow-symlinks -i '/meta-freescale/d' conf/bblayers.conf
 echo "Removed meta-freescale layer from bblayers.conf"
 
 
@@ -504,20 +506,8 @@ if bitbake $BUILD_IMG ; then
     printf " ${BLUE}${PWD}/deploy/glibc/images/${BOARD}/${GREEN}\n"
     printf "\n"
     printf " If you built a full image (XFCE or console), you can now copy\n"
-    printf " the SD card image file to your micro SD Card:\n"
-    printf "  1. Insert your micro SD card into appropriate adapter and plug\n"
-    printf "     into USB port or SD card reader port on this PC.\n"
-    printf "  2. Determine the SD card mount point by entering a command such\n"
-    printf "     as ${NC}lsblk${GREEN} at the prompt below.\n"
-    printf "  3. At the prompt, enter or copy & paste the command:\n"
-    printf "     ${NC}sudo dd if=${PWD}/deploy/glibc/images/${BOARD}/${BUILD_IMG}-${BOARD}.socfpga-sdimg of=/dev/sd${RED}X${NC} bs=1M && sync${GREEN}\n"
-    printf "     where ${NC}sd${RED}X${GREEN} is the mount point determined in step 2.\n"
-    printf "     ${ORANGE}WARNING: using dd incorrectly can result in data loss and \n"
-    printf "     frustration.  Be absolutely certain you specify the correct \n"
-    printf "     mount point determined in step 2 above.${GREEN}\n"
-    printf "  4. When copying is finished and you are returned to the command\n"
-    printf "     prompt, eject the SD card from this PC, insert into the\n"
-    printf "     board's SD card adapter, and power on the board.\n"
+    printf " the eMMC image file to the board's eMMC device.  Refer to the\n"
+    printf " rocketboards.org board article for programming instructions.\n"
     printf "*******************************************************************\n"
     printf "\n"
     echo -e ${NC}

@@ -1,7 +1,6 @@
 #!/bin/bash
 #
 # MIT License
-# Copyright (c) 2017 Arrow Electronics
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Author: Dan Negvesky <dnegvesky@arrow.com>
+# Author: Dan Negvesky <dnegvesky@reflexces.com>
 # Contributors:
 #
 # Release info:
@@ -42,6 +41,8 @@
 # 04/30/2018 - updated all Essentials package list for Yocto Project 2.6.2
 #            - tested with Ubuntu 18.04 (supported as stated in Yocto 2.6.2 documentation)
 #
+# 05/04/2020 - updated all Essentials package list for Yocto Project 2.7
+#            - tested with Ubuntu 18.04 (supported as stated in Yocto 2.7 documentation)
 
 #################################################
 # Functions
@@ -231,7 +232,9 @@ case "$DISTRO" in
         check_package 'xz-utils'
         check_package 'debianutils'
         check_package 'iputils-ping'
-        # Graphics or Eclipse support
+        check_package 'python3-git'
+        check_package 'python3-jinja2'
+        check_package 'libegl1-mesa'
         check_package 'libsdl1.2-dev'
         check_package 'xterm'
         # Other
@@ -265,13 +268,15 @@ case "$DISTRO" in
         check_package 'perl-bignum'
         check_package 'socat'
         check_package 'python3-pexpect'
+        check_package 'findutils'
         check_package 'which'
         check_package 'file'
         check_package 'cpio'
         check_package 'python'
         check_package 'python3-pip'
         check_package 'xz'
-        # Graphics or Eclipse support
+        check_package 'python3-GitPython'
+        check_package 'python3-jinja2'
         check_package 'SDL-devel'
         check_package 'xterm'
         # Other
@@ -299,7 +304,9 @@ case "$DISTRO" in
         check_package 'python3-pexpect'
         check_package 'xz'
         check_package 'which'
-        # Graphics or Eclipse support
+        check_package 'python3-Jinja2'
+        check_package 'Mesa-libEGL1'
+        check_package 'GitPython'
         check_package 'libSDL-devel'
         check_package 'xterm'
         # Other
@@ -308,6 +315,7 @@ case "$DISTRO" in
     "CentOS")
         # Essentials
         check_package 'epel-release'
+        check_package 'makecache'
         check_package 'gawk' 
         check_package 'make'
         check_package 'wget'
@@ -333,7 +341,7 @@ case "$DISTRO" in
         check_package 'perl-Thread-Queue'
         check_package 'python34-pip'
         check_package 'xz'
-        # Graphics or Eclipse support
+        check_package 'which'
         check_package 'SDL-devel'
         check_package 'xterm'
         # Other
